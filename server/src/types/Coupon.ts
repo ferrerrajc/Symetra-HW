@@ -4,8 +4,3 @@ export interface Coupon {
     maxUses: number;
     discountPercent: number;
 }
-
-export interface CouponState {
-    coupon: Coupon
-    remainingUses: number
-}
