@@ -1,7 +1,4 @@
-import { Coupon } from "../types/Coupon";
-import { Product } from "../types/Product";
-import { Transaction } from "../types/Transaction";
-import { User } from "../types/User";
+import { Coupon, Transaction, Product, User } from "../types";
 import { InMemoryDB } from "./db";
 
 export interface CouponStoreInterface {
@@ -64,11 +61,11 @@ export class CouponStore implements CouponStoreInterface {
     }
     getTransactionsByUserId(userId: string): Promise<Transaction[]> {
         return this.getAllTransactions()
-            .then(transactions => transactions.filter(transaction => transaction.user.id === userId))
+            .then(transactions => transactions.filter(transaction => transaction.userId === userId))
     }
     createTransaction(transaction: Transaction): Promise<Transaction> {
         return this.db.addTransaction(transaction).then(createdTransaction => {
-            createdTransaction.coupons.forEach(coupon => this.useCoupon(transaction.user.id, coupon.code))
+            createdTransaction.couponCodes.forEach(couponCode => this.useCoupon(transaction.userId, couponCode))
             return createdTransaction;
         })
     }
@@ -103,13 +100,13 @@ export class CouponStore implements CouponStoreInterface {
     private initialize() {
         return this.getAllCoupons()
             .then(coupons => {
-                const transactions = this.getAllTransactions()
+                return this.getAllTransactions()
                     .then(transactions => {
                         coupons.forEach(coupon => {
-                            const uses = transactions.filter(transaction => transaction.coupons.includes(coupon));
+                            const uses = transactions.filter(transaction => transaction.couponCodes.includes(coupon.code));
 
                             this.remainingUses[coupon.code] = Math.max(0, coupon.maxUses - uses.length);
-                            this.redeemedCouponCodes[coupon.code] = uses.map(transaction => transaction.user.id);
+                            this.redeemedCouponCodes[coupon.code] = uses.map(transaction => transaction.userId);
                         })
                     })
             })

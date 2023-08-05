@@ -1,9 +1,6 @@
 import { commerce, datatype } from "faker";
 import { generateId } from "../util";
-import { Coupon } from "../types/Coupon";
-import { Product } from "../types/Product";
-import { Transaction } from "../types/Transaction";
-import { User } from "../types/User";
+import { Product, User, Transaction, Coupon } from "../types";
 
 function createRandomProduct(): Product {
     return generateId({
@@ -31,11 +28,11 @@ const products: Product[] = [
 ]
 
 const transactions: Transaction[] = [
-    generateId({ user: users[0], products: [products[0]], coupons: [] }),
-    generateId({ user: users[0], products: [products[1]], coupons: [] }),
-    generateId({ user: users[0], products: [products[2]], coupons: [] }),
-    generateId({ user: users[1], products: [products[3]], coupons: [] }),
-    generateId({ user: users[1], products: [products[4]], coupons: [] }),
+    generateId({ userId: users[0].id, productIds: [products[0].id], couponCodes: [] }),
+    generateId({ userId: users[0].id, productIds: [products[1].id], couponCodes: [] }),
+    generateId({ userId: users[0].id, productIds: [products[2].id], couponCodes: [] }),
+    generateId({ userId: users[1].id, productIds: [products[3].id], couponCodes: [] }),
+    generateId({ userId: users[1].id, productIds: [products[4].id], couponCodes: [] }),
 ]
 
 const coupons: Coupon[] = [

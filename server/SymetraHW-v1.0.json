@@ -1,0 +1,234 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "CouponStore API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:7070"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "userIdParam": {
+        "name": "userId",
+        "description": "Simulated logged in user",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "Coupon": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The code customers will enter to redeem this coupon",
+            "example": "BIGDEAL15"
+          },
+          "afterTransactions": {
+            "type": "integer",
+            "description": "The number of completed transactions for a customer to be eligible for this coupon",
+            "minimum": 1,
+            "example": 10
+          },
+          "maxUses": {
+            "type": "integer",
+            "description": "The number of times this coupon may be redeemed",
+            "minimum": 1,
+            "example": 10
+          },
+          "discountPercent": {
+            "type": "number",
+            "description": "The percent that the price will be reduced when redeeming this coupon",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 15
+          }
+        },
+        "required": [
+          "code",
+          "afterTransactions",
+          "maxUses",
+          "discountPercent"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "Hat"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "Alice"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price"
+        ]
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "productIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minLength": 1
+          },
+          "couponCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "productIds",
+          "couponCodes"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/store/products": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/userIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/store/coupons": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/userIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coupons retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Coupon"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/store/transactions": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/userIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transactions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transaction"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/coupon": {
+      "post": {
+        "description": "",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Coupon"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Coupon created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coupon"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid coupon data"
+          }
+        }
+      }
+    }
+  }
+}

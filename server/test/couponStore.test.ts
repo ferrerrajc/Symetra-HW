@@ -1,9 +1,8 @@
 import { CouponStore } from "../src/store/couponStore";
 import { InMemoryDB } from "../src/store/db";
-import { Coupon } from "../src/types/Coupon";
 import dummyData from "../src/store/dummyData";
+import { Coupon, Transaction } from "../src/types";
 import { generateId } from "../src/util";
-import { Transaction } from "../src/types/Transaction";
 
 const coupon1: Coupon = {
   afterTransactions: 1,
@@ -72,7 +71,7 @@ test('get transactions by user ID', () => {
 
   return couponStore.getTransactionsByUserId(user.id)
     .then(userTransactions => {
-      userTransactions.forEach(transaction => expect(transaction.user.id).toEqual(user.id))
+      userTransactions.forEach(transaction => expect(transaction.userId).toEqual(user.id))
     })
 })
 
@@ -80,9 +79,9 @@ test('create a transaction', () => {
   const db = new InMemoryDB(dummyData);
   const couponStore = new CouponStore(db);
 
-  const user = dummyData.users[0];
-  const products = [dummyData.products[0], dummyData.products[4]]
-  const transaction = generateId<Transaction>({ user, products, coupons: [] })
+  const userId = dummyData.users[0].id;
+  const productIds = [dummyData.products[0].id, dummyData.products[4].id]
+  const transaction = generateId<Transaction>({ userId, productIds, couponCodes: [] })
 
   return couponStore.createTransaction(transaction)
     .then(() => couponStore.getAllTransactions())
@@ -114,17 +113,17 @@ test('get all users', () => {
 })
 
 test('get coupons for user', () => {
-  const user = dummyData.users[0]
+  const userId = dummyData.users[0].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon1],
-    transactions: [generateId({ user, products: [dummyData.products[0]], coupons: []})]
+    transactions: [generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] })]
   }
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(1)
       expect(userCoupons).toContain(coupon1)
@@ -132,46 +131,45 @@ test('get coupons for user', () => {
 })
 
 test('dont get coupons for user without enough transactions', () => {
-  const user = dummyData.users[0]
+  const userId = dummyData.users[0].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon5],
-    transactions: [generateId({ user, products: [dummyData.products[0]], coupons: []})]
+    transactions: [generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] })]
   }
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })
 })
 
 test('dont get coupons for user that have been used up', () => {
-  const user = dummyData.users[0]
-  const otherUser = dummyData.users[1]
+  const userId = dummyData.users[0].id
+  const otherUserId = dummyData.users[1].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon1],
     transactions: [
-      generateId({ user, products: [dummyData.products[0]], coupons: []}),
-      generateId({ user: otherUser, products: [dummyData.products[0]], coupons: [coupon1]}),
+      generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] }),
+      generateId({ userId: otherUserId, productIds: [dummyData.products[0].id], couponCodes: [coupon1.code] }),
     ]
   }
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })
 })
 
 test('dont get coupons for user that they have redeemed', () => {
-  const user = dummyData.users[0]
-  const otherUser = dummyData.users[1]
+  const userId = dummyData.users[0].id
   const coupon: Coupon = {
     ...coupon1,
     maxUses: 5
@@ -180,37 +178,37 @@ test('dont get coupons for user that they have redeemed', () => {
     ...dummyData,
     coupons: [coupon],
     transactions: [
-      generateId({ user, products: [dummyData.products[0]], coupons: [coupon]}),
+      generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [coupon.code] }),
     ]
   }
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })
 })
 
 test('adding nth transaction makes user eligible for coupon', () => {
-  const user = dummyData.users[0]
+  const userId = dummyData.users[0].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon1],
     transactions: []
   }
-  const transaction: Transaction = generateId({ user, products: [dummyData.products[0]], coupons: []});
+  const transaction: Transaction = generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] });
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })
     .then(() => couponStore.createTransaction(transaction))
-    .then(() => couponStore.getCouponsForUser(user.id))
+    .then(() => couponStore.getCouponsForUser(userId))
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(1)
       expect(userCoupons).toContain(coupon1)
@@ -218,49 +216,53 @@ test('adding nth transaction makes user eligible for coupon', () => {
 })
 
 test('redeeming coupon makes user ineligible for coupon', () => {
-  const user = dummyData.users[0]
+  const userId = dummyData.users[0].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon1],
-    transactions: [generateId({ user, products: [dummyData.products[0]], coupons: []})]
+    transactions: [
+      generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] }),
+    ]
   }
-  const transaction: Transaction = generateId({ user, products: [dummyData.products[0]], coupons: [coupon1]});
+  const transaction: Transaction = generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [coupon1.code] });
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(1)
       expect(userCoupons).toContain(coupon1)
     })
     .then(() => couponStore.createTransaction(transaction))
-    .then(() => couponStore.getCouponsForUser(user.id))
+    .then(() => couponStore.getCouponsForUser(userId))
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })
 })
 
 test('coupon used max times makes user ineligible for coupon', () => {
-  const user = dummyData.users[0]
-  const otherUser = dummyData.users[1]
+  const userId = dummyData.users[0].id
+  const otherUserId = dummyData.users[1].id
   const seedData: typeof dummyData = {
     ...dummyData,
     coupons: [coupon1],
-    transactions: [generateId({ user, products: [dummyData.products[0]], coupons: []})]
+    transactions: [
+      generateId({ userId, productIds: [dummyData.products[0].id], couponCodes: [] }),
+    ]
   }
-  const transaction: Transaction = generateId({ user: otherUser, products: [dummyData.products[0]], coupons: [coupon1]});
+  const transaction: Transaction = generateId({ userId: otherUserId, productIds: [dummyData.products[0].id], couponCodes: [coupon1.code] });
 
   const db = new InMemoryDB(seedData);
   const couponStore = new CouponStore(db);
 
-  return couponStore.getCouponsForUser(user.id)
+  return couponStore.getCouponsForUser(userId)
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(1)
       expect(userCoupons).toContain(coupon1)
     })
     .then(() => couponStore.createTransaction(transaction))
-    .then(() => couponStore.getCouponsForUser(user.id))
+    .then(() => couponStore.getCouponsForUser(userId))
     .then(userCoupons => {
       expect(userCoupons).toHaveLength(0)
     })

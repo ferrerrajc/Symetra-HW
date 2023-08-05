@@ -1,7 +1,4 @@
-import { Coupon } from "../types/Coupon";
-import { Product } from "../types/Product";
-import { Transaction } from "../types/Transaction";
-import { User } from "../types/User";
+import { User, Product, Coupon, Transaction } from "../types"
 
 interface SeedData {
     users: User[]
@@ -72,7 +69,7 @@ export class InMemoryDB {
         return this.getAllTransactions()
             .then(Object.values)
             .then((allTransactions: Transaction[]) => allTransactions
-                .filter(transaction => transaction.user.id === userId)
+                .filter(transaction => transaction.userId === userId)
             )
     }
     addTransaction(transaction: Transaction) {
