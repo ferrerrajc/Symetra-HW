@@ -201,6 +201,26 @@
         }
       }
     },
+    "/admin/users": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/coupon": {
       "post": {
         "description": "",

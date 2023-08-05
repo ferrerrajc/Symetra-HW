@@ -1,16 +1,33 @@
 import express from "express";
-import { inspect } from "util";
+import { CouponStore } from "../store/couponStore";
+import { couponValidator } from "../validators/Coupon";
 
-export const adminApi = express.Router();
+export function getAdminApi(couponStore: CouponStore) {
+    const adminApi = express.Router();
 
-interface CouponsRequestBody {
-    uses: number
+    adminApi.post("/coupon", async (req, res) => {
+        const { data, problems } = couponValidator(req.body);
+
+        if (problems) {
+            res.status(400).json({ problems });
+        } else if (data) {
+            try {
+                const result = await couponStore.createCoupon(data);
+                return res.json(result);
+            } catch (error) {
+                res.status(500).json({ error });
+            }
+        }
+    })
+
+    adminApi.get("/users", async (_req, res) => {
+        try {
+            const users = await couponStore.getAllUsers();
+            return res.json(users);
+        } catch (error) {
+            res.status(500).json({ error });
+        }
+    })
+
+    return adminApi;
 }
-interface CouponsResponseBody {
-    couponCode: string
-}
-
-adminApi.post<CouponsRequestBody, CouponsResponseBody>("/coupon", (req, res) => {
-    console.log(inspect(req.body));
-    res.send({ couponCode: "asdf" });
-})

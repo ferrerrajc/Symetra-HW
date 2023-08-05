@@ -56,6 +56,18 @@ export interface paths {
       };
     };
   };
+  "/admin/users": {
+    get: {
+      responses: {
+        /** @description Users retrieved successfully */
+        200: {
+          content: {
+            "application/json": components["schemas"]["User"][];
+          };
+        };
+      };
+    };
+  };
   "/admin/coupon": {
     post: {
       requestBody?: {
