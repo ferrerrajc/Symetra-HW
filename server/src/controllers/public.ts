@@ -32,7 +32,7 @@ export function getPublicApi(couponStore: CouponStoreInterface) {
         }
     })
 
-    publicApi.post("/transaction", async (req, res) => {
+    publicApi.post("/transactions", async (req, res) => {
         const { data, problems } = transactionValidator(req.body);
 
         if (problems) {

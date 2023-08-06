@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { InMemoryDB } from "./store/db";
 import { CouponStore } from "./store/couponStore";
 import { getPublicApi } from "./controllers/public";
@@ -12,6 +13,7 @@ const db = new InMemoryDB(dummyData);
 const couponStore = new CouponStore(db);
 
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:3000" }))
 
 app.use("/admin", getAdminApi(couponStore));
 app.use("/store", getPublicApi(couponStore))

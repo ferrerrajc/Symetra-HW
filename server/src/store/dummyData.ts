@@ -4,7 +4,7 @@ import { Product, User, Transaction, Coupon } from "../types";
 
 function createRandomProduct(): Product {
     return generateId({
-        name: commerce.product(),
+        name: `${commerce.productAdjective()} ${commerce.product()}`,
         price: datatype.float({ min: 1.00, max: 100.00, precision: 0.01 })
     })
 }

@@ -55,6 +55,21 @@ export interface paths {
         };
       };
     };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["Transaction"];
+        };
+      };
+      responses: {
+        /** @description Transactions retrieved successfully */
+        200: {
+          content: {
+            "application/json": components["schemas"]["Transaction"][];
+          };
+        };
+      };
+    };
   };
   "/admin/users": {
     get: {
