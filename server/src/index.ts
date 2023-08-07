@@ -18,6 +18,8 @@ app.use(cors({ origin: "http://localhost:3000" }))
 app.use("/admin", getAdminApi(couponStore));
 app.use("/store", getPublicApi(couponStore))
 
+app.use("/spec", express.static("spec"));
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 })

@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "start": "npm run build && node build/index.js",
-    "generate": "openapi-typescript ./SymetraHW-v1.0.json -o ./src/types/schema.d.ts",
-    "generate-front": "openapi-typescript ./SymetraHW-v1.0.json -o ../storefront/src/generated/schema.d.ts",
+    "generate": "openapi-typescript ./spec/SymetraHW-v1.0.json -o ./src/types/schema.d.ts",
+    "generate-front": "openapi-typescript ./spec/SymetraHW-v1.0.json -o ../storefront/src/generated/schema.d.ts",
     "test": "jest"
   },
   "author": "",

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Container, Row, Stack, Table } from "react-bootstrap";
 import { getAllProducts, getAllTransactions, getAllUsers, getCoupons, postTransaction } from "./api/client";
 import { v4 } from "uuid";
+import Link from "next/link";
 
 const initialCouponDraft: Coupon = { code: "", afterTransactions: 1, discountPercent: 10, maxUses: 1 }
 
@@ -139,6 +140,7 @@ export default function Home() {
     <main>
       <Stack direction="horizontal" gap={3}>
         <div className="p-2">Hello {activeUser ? getUserName(activeUser) : "Admin"}</div>
+        <Link href={"/docs"} >API Docs</Link>
         <div className="p-2 ms-auto">Log in as:</div>
         {users.map(user => (
           <Button
@@ -274,6 +276,7 @@ export default function Home() {
         }
       </Container>
 
+      {/* Transaction List Section */}
       <Container className="justify-content-md-center">
         <h3>Transactions</h3>
         {transactions &&
