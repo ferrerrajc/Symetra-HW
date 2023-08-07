@@ -131,6 +131,7 @@
   "paths": {
     "/store/products": {
       "get": {
+        "summary": "Get All Products",
         "description": "Returns all products",
         "parameters": [
           {
@@ -156,6 +157,7 @@
     },
     "/store/coupons": {
       "get": {
+        "summary": "Get All Coupons",
         "description": "If a userId is provided, returns the coupons that the user is eligible for. Otherwise, returns all coupons",
         "parameters": [
           {
@@ -181,6 +183,7 @@
     },
     "/store/transactions": {
       "get": {
+        "summary": "Get All Transactions",
         "description": "If a userId is provided, returns that user's transaction history. Otherwise, returns all recorded transactions",
         "parameters": [
           {
@@ -204,6 +207,7 @@
         }
       },
       "post": {
+        "summary": "Add a New Transaction",
         "description": "Simulates making a purchase",
         "requestBody": {
           "content": {
@@ -216,14 +220,11 @@
         },
         "responses": {
           "200": {
-            "description": "Transactions retrieved successfully",
+            "description": "Transaction created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Transaction"
-                  }
+                  "$ref": "#/components/schemas/Transaction"
                 }
               }
             }
@@ -233,6 +234,7 @@
     },
     "/admin/users": {
       "get": {
+        "summary": "Get All Users",
         "description": "Returns all users",
         "responses": {
           "200": {
@@ -253,6 +255,7 @@
     },
     "/admin/coupon": {
       "post": {
+        "summary": "Add a New Coupon",
         "description": "Creates a new coupon",
         "requestBody": {
           "content": {

@@ -293,9 +293,9 @@ export default function Home() {
                 <th>Coupon Code</th>
                 <th>Required Transactions</th>
                 <th>Maximum Uses</th>
-                {transactions && <th>Recorded Uses</th>}
+                {!activeUser && transactions && <th>Recorded Uses</th>}
                 <th>Discount Percent</th>
-                <th></th>
+                {activeUser && <th></th>}
               </tr>
             </thead>
             <tbody>
@@ -304,11 +304,13 @@ export default function Home() {
                   <td>{coupon.code}</td>
                   <td>{coupon.afterTransactions}</td>
                   <td>{coupon.maxUses}</td>
-                  {transactions && <td>{transactions.filter(transaction => transaction.couponCodes.includes(coupon.code)).length}</td>}
+                  {!activeUser && transactions && <td>{transactions.filter(transaction => transaction.couponCodes.includes(coupon.code)).length}</td>}
                   <td>{coupon.discountPercent}%</td>
-                  <td>
-                    {activeUser && <Button onClick={() => addCouponToCart(coupon.code)}>Add to Cart</Button>}
-                  </td>
+                  {activeUser &&
+                    <td>
+                      <Button onClick={() => addCouponToCart(coupon.code)}>Add to Cart</Button>
+                    </td>
+                  }
                 </tr>
               })}
             </tbody>

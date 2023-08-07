@@ -6,7 +6,10 @@
 
 export interface paths {
   "/store/products": {
-    /** @description Returns all products */
+    /**
+     * Get All Products
+     * @description Returns all products
+     */
     get: {
       parameters: {
         query?: {
@@ -24,7 +27,10 @@ export interface paths {
     };
   };
   "/store/coupons": {
-    /** @description If a userId is provided, returns the coupons that the user is eligible for. Otherwise, returns all coupons */
+    /**
+     * Get All Coupons
+     * @description If a userId is provided, returns the coupons that the user is eligible for. Otherwise, returns all coupons
+     */
     get: {
       parameters: {
         query?: {
@@ -42,7 +48,10 @@ export interface paths {
     };
   };
   "/store/transactions": {
-    /** @description If a userId is provided, returns that user's transaction history. Otherwise, returns all recorded transactions */
+    /**
+     * Get All Transactions
+     * @description If a userId is provided, returns that user's transaction history. Otherwise, returns all recorded transactions
+     */
     get: {
       parameters: {
         query?: {
@@ -58,7 +67,10 @@ export interface paths {
         };
       };
     };
-    /** @description Simulates making a purchase */
+    /**
+     * Add a New Transaction
+     * @description Simulates making a purchase
+     */
     post: {
       requestBody?: {
         content: {
@@ -66,17 +78,20 @@ export interface paths {
         };
       };
       responses: {
-        /** @description Transactions retrieved successfully */
+        /** @description Transaction created successfully */
         200: {
           content: {
-            "application/json": components["schemas"]["Transaction"][];
+            "application/json": components["schemas"]["Transaction"];
           };
         };
       };
     };
   };
   "/admin/users": {
-    /** @description Returns all users */
+    /**
+     * Get All Users
+     * @description Returns all users
+     */
     get: {
       responses: {
         /** @description Users retrieved successfully */
@@ -89,7 +104,10 @@ export interface paths {
     };
   };
   "/admin/coupon": {
-    /** @description Creates a new coupon */
+    /**
+     * Add a New Coupon
+     * @description Creates a new coupon
+     */
     post: {
       requestBody?: {
         content: {

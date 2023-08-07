@@ -20,8 +20,9 @@ There is also a link in the upper left corner of the page which leads to the API
 
 Install dependencies by running
 ```
-npm install
+npm install --force
 ```
+> Note: The `--force` is required because of a minor dependency clash between `nextjs` and `redoc`. This could be resolved by moving the generated API docs out of the storefront project. The clash doesn't cause any issues at build or run time.
 
 Build the storefront resources
 ```
