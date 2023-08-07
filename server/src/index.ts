@@ -7,8 +7,9 @@ import { getAdminApi } from "./controllers/admin";
 import dummyData from "./store/dummyData";
 
 const app = express();
-const port = 7070;
 
+// Hard-coded Config
+const port = 7070;
 const db = new InMemoryDB(dummyData);
 const couponStore = new CouponStore(db);
 
@@ -18,6 +19,7 @@ app.use(cors({ origin: "http://localhost:3000" }))
 app.use("/admin", getAdminApi(couponStore));
 app.use("/store", getPublicApi(couponStore))
 
+// Expose spec for generated API docs
 app.use("/spec", express.static("spec"));
 
 app.listen(port, () => {

@@ -131,6 +131,7 @@
   "paths": {
     "/store/products": {
       "get": {
+        "description": "Returns all products",
         "parameters": [
           {
             "$ref": "#/components/parameters/userIdParam"
@@ -155,6 +156,7 @@
     },
     "/store/coupons": {
       "get": {
+        "description": "If a userId is provided, returns the coupons that the user is eligible for. Otherwise, returns all coupons",
         "parameters": [
           {
             "$ref": "#/components/parameters/userIdParam"
@@ -179,6 +181,7 @@
     },
     "/store/transactions": {
       "get": {
+        "description": "If a userId is provided, returns that user's transaction history. Otherwise, returns all recorded transactions",
         "parameters": [
           {
             "$ref": "#/components/parameters/userIdParam"
@@ -201,6 +204,7 @@
         }
       },
       "post": {
+        "description": "Simulates making a purchase",
         "requestBody": {
           "content": {
             "application/json": {
@@ -229,7 +233,7 @@
     },
     "/admin/users": {
       "get": {
-        "description": "",
+        "description": "Returns all users",
         "responses": {
           "200": {
             "description": "Users retrieved successfully",
@@ -249,7 +253,7 @@
     },
     "/admin/coupon": {
       "post": {
-        "description": "",
+        "description": "Creates a new coupon",
         "requestBody": {
           "content": {
             "application/json": {

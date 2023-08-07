@@ -6,6 +6,7 @@
 
 export interface paths {
   "/store/products": {
+    /** @description Returns all products */
     get: {
       parameters: {
         query?: {
@@ -23,6 +24,7 @@ export interface paths {
     };
   };
   "/store/coupons": {
+    /** @description If a userId is provided, returns the coupons that the user is eligible for. Otherwise, returns all coupons */
     get: {
       parameters: {
         query?: {
@@ -40,6 +42,7 @@ export interface paths {
     };
   };
   "/store/transactions": {
+    /** @description If a userId is provided, returns that user's transaction history. Otherwise, returns all recorded transactions */
     get: {
       parameters: {
         query?: {
@@ -55,6 +58,7 @@ export interface paths {
         };
       };
     };
+    /** @description Simulates making a purchase */
     post: {
       requestBody?: {
         content: {
@@ -72,6 +76,7 @@ export interface paths {
     };
   };
   "/admin/users": {
+    /** @description Returns all users */
     get: {
       responses: {
         /** @description Users retrieved successfully */
@@ -84,6 +89,7 @@ export interface paths {
     };
   };
   "/admin/coupon": {
+    /** @description Creates a new coupon */
     post: {
       requestBody?: {
         content: {

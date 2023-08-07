@@ -25,6 +25,7 @@ export class CouponStore implements CouponStoreInterface {
         this.initialize()
     }
 
+    // Coupon Operations
     createCoupon(coupon: Coupon): Promise<Coupon> {
         return this.db.addCoupon(coupon)
             .then(addedCoupon => {
@@ -56,6 +57,7 @@ export class CouponStore implements CouponStoreInterface {
                 ))
     }
 
+    // Transacion Operations
     getAllTransactions(): Promise<Transaction[]> {
         return this.db.getAllTransactions()
             .then(transactions => Object.values(transactions))
@@ -71,11 +73,13 @@ export class CouponStore implements CouponStoreInterface {
         })
     }
 
+    // Product Operations
     getAllProducts(): Promise<Product[]> {
         return this.db.getAllProducts()
             .then(products => Object.values(products))
     }
 
+    // User Operations
     getAllUsers(): Promise<User[]> {
         return this.db.getAllUsers()
             .then(users => Object.values(users))
