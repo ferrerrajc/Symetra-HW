@@ -1,29 +1,34 @@
 'use client'
 import { Coupon, Product, Transaction, User } from "@/generated/types";
-import { useEffect, useState } from "react";
-import { Button, Col, Container, Row, Stack, Table } from "react-bootstrap";
-import { getAllProducts, getAllTransactions, getAllUsers, getCoupons, postTransaction } from "./api/client";
-import { v4 } from "uuid";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button, Col, Container, Form, Modal, Row, Stack, Table } from "react-bootstrap";
+import { v4 } from "uuid";
+import { getAllProducts, getAllTransactions, getAllUsers, getCoupons, postCoupon, postTransaction } from "./api/client";
 
 const initialCouponDraft: Coupon = { code: "", afterTransactions: 1, discountPercent: 10, maxUses: 1 }
 
 export default function Home() {
 
+  // API data
   const [users, setUsers] = useState<User[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  // Used to mark data as stale after post
   const [refresh, setRefresh] = useState(false);
   function refreshData() {
     setRefresh(!refresh);
   }
 
+  // Page state
   const [cart, setCart] = useState<Transaction>({ id: v4(), userId: "", productIds: [], couponCodes: [] });
   const [activeUser, setActiveUser] = useState<string | undefined>();
   const [draftCoupon, setDraftCoupon] = useState<Coupon>(initialCouponDraft);
   const [editingCoupon, setEditingCoupon] = useState(false);
 
+  // Util
   function getUserName(userId: string) {
     return users.find(user => user.id === userId)?.name;
   }
@@ -47,6 +52,7 @@ export default function Home() {
     };
   }
 
+  // Cart state management
   function addProductToCart(productId: string) {
     setCart({
       ...cart,
@@ -99,6 +105,42 @@ export default function Home() {
       })
   }
 
+  // Coupon Form handling
+  function handleCloseModal() {
+    setEditingCoupon(false);
+    setDraftCoupon(initialCouponDraft);
+  }
+  function handleChangeCouponCode(code: string) {
+    setDraftCoupon({
+      ...draftCoupon,
+      code
+    })
+  }
+  function handleChangeCouponAfterTransaction(afterTransactions: number) {
+    setDraftCoupon({
+      ...draftCoupon,
+      afterTransactions
+    })
+  }
+  function handleChangeCouponMaxUses(maxUses: number) {
+    setDraftCoupon({
+      ...draftCoupon,
+      maxUses
+    })
+  }
+  function handleChangeCouponDiscountPercent(discountPercent: number) {
+    setDraftCoupon({
+      ...draftCoupon,
+      discountPercent
+    })
+  }
+  function handleSubmitModal() {
+    postCoupon(draftCoupon)
+      .then(() => handleCloseModal())
+      .then(() => refreshData())
+  }
+
+  // Data Fetching
   useEffect(() => {
     getAllProducts().then(({ data }) => {
       if (data) {
@@ -129,7 +171,7 @@ export default function Home() {
   }, [activeUser, refresh])
   useEffect(() => {
     setCart({
-      ...cart,
+      id: v4(),
       userId: activeUser || "",
       productIds: [],
       couponCodes: [],
@@ -141,7 +183,7 @@ export default function Home() {
       <Stack direction="horizontal" gap={3}>
         <div className="p-2">Hello {activeUser ? getUserName(activeUser) : "Admin"}</div>
         <Link href={"/docs"} >API Docs</Link>
-        <div className="p-2 ms-auto">Log in as:</div>
+        <div className="p-2 ms-auto">View page as:</div>
         {users.map(user => (
           <Button
             variant={activeUser === user.id ? "success" : "primary"}
@@ -240,7 +282,10 @@ export default function Home() {
 
       {/* Coupon List Section */}
       <Container className="justify-content-md-center">
-        <h3>Available Coupons</h3>
+        <Stack direction="horizontal" gap={3}>
+          <h3>Available Coupons</h3>
+          {!activeUser && <Button onClick={() => setEditingCoupon(true)}>Create a new coupon</Button>}
+        </Stack>
         {coupons &&
           <Table striped bordered hover>
             <thead>
@@ -266,15 +311,74 @@ export default function Home() {
                   </td>
                 </tr>
               })}
-              {!activeUser && editingCoupon &&
-                <tr>
-
-                </tr>
-              }
             </tbody>
           </Table>
         }
       </Container>
+
+      {/* Create Coupon Modal */}
+      <Modal show={editingCoupon}>
+        <Modal.Header>
+          <Modal.Title>New Coupon</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmitModal}>
+            <Form.Group className="mb-3">
+              <Form.Label>Coupon Code</Form.Label>
+              <Form.Control
+                required
+                value={draftCoupon.code}
+                onChange={(e) => handleChangeCouponCode(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>After Transaction</Form.Label>
+              <Form.Control
+                required
+                type="number"
+                min={1}
+                step={1}
+                value={draftCoupon.afterTransactions}
+                onChange={(e) => handleChangeCouponAfterTransaction(parseInt(e.target.value))}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Maximum Uses</Form.Label>
+              <Form.Control
+                required
+                type="number"
+                min={1}
+                step={1}
+                value={draftCoupon.maxUses}
+                onChange={(e) => handleChangeCouponMaxUses(parseInt(e.target.value))}
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Percent Discount</Form.Label>
+              <Form.Control
+                required
+                type="number"
+                min={1}
+                max={99}
+                value={draftCoupon.discountPercent}
+                onChange={(e) => handleChangeCouponDiscountPercent(parseInt(e.target.value))}
+              />
+            </Form.Group>
+
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSubmitModal}>
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* Transaction List Section */}
       <Container className="justify-content-md-center">

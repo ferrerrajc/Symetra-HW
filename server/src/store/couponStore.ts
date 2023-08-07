@@ -29,6 +29,7 @@ export class CouponStore implements CouponStoreInterface {
         return this.db.addCoupon(coupon)
             .then(addedCoupon => {
                 this.remainingUses[addedCoupon.code] = addedCoupon.maxUses;
+                this.redeemedCouponCodes[addedCoupon.code] = [];
                 return addedCoupon;
             })
     }

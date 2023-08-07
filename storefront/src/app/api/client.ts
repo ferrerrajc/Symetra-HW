@@ -1,6 +1,6 @@
 import createClient from "openapi-fetch";
 import { paths } from "@/generated/schema";
-import { Transaction } from "@/generated/types";
+import { Coupon, Transaction } from "@/generated/types";
 
 const { GET, POST } = createClient<paths>({ baseUrl: "http://localhost:7070" });
 
@@ -18,6 +18,10 @@ export function postTransaction(transaction: Transaction) {
 
 export function getCoupons(userId?: string) {
     return GET("/store/coupons", { params: userId ? { query: { userId }} : {}})
+}
+
+export function postCoupon(coupon: Coupon) {
+    return POST("/admin/coupon", { body: coupon })
 }
 
 export function getAllUsers() {
